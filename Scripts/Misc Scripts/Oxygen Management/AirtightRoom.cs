@@ -104,7 +104,6 @@ namespace IngameScript
                 }
 
                 // Check the room status
-                _program.Echo($"Room {_roomName} pressurized? {_pressurized}");
                 var inEmergencyNow = _pressurized ? CheckPressurizedRoom() : CheckDepressurizedRoom();
 
                 // If emergency is over, revert air vents to previous status
