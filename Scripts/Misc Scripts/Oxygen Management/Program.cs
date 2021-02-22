@@ -182,7 +182,7 @@ namespace IngameScript
             AirtightRoom room;
             if (!_rooms.TryGetValue(roomName, out room))
             {
-                room = _rooms[roomName] = new AirtightRoom();
+                room = _rooms[roomName] = new AirtightRoom(roomName, this);
             }
 
             addDoorFunc(room, door);
