@@ -1,0 +1,11 @@
+﻿R e a d m e
+-----------
+
+This script manages airlocks and other airtight rooms so that oxygen is not lost.
+
+Please use the following naming convention for doors/vents (with no brackets necessary).
+Note that the names just need to contain the following substrings.
+The script will also distinguish between identical room names on different subgrids.
+* Outer doors (which lead to vacuum/space): [Room] Outer
+* Inner doors (which lead to pressurized areas): [Room 1]/[Room 2]
+* Air vents: [Room] Vent
