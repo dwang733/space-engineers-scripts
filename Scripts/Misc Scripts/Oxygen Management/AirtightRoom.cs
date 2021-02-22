@@ -228,7 +228,6 @@ namespace IngameScript
                     // If room has oxygen, lock outer doors until fully depressurized
                     else if (_oxygenLevel > 0)
                     {
-                        //_innerDoors.ForEach(door => door.Enabled = false);
                         _innerDoors.ForEach(door => door.Enabled = true);
                         _outerDoors.ForEach(door => door.Enabled = false);
                         _monitorOxygenLevel = true;
