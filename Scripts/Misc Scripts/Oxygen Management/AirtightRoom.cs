@@ -132,6 +132,21 @@ namespace IngameScript
                 _prevPressurized = _pressurized;
             }
 
+            public void AddInnerDoor(IMyDoor door)
+            {
+                _innerDoors.Add(door);
+            }
+
+            public void AddOuterDoor(IMyDoor door)
+            {
+                _outerDoors.Add(door);
+            }
+
+            public void AddAirVent(IMyAirVent vent)
+            {
+                _airVents.Add(vent);
+            }
+
             public void EchoRoomInfo()
             {
                 _program.Echo($"Room [{_roomName}] has {_innerDoors.Count} inner doors, {_outerDoors.Count} outer doors, and {_airVents.Count} air vents.");
@@ -140,21 +155,6 @@ namespace IngameScript
             public bool IsValidRoom()
             {
                 return _innerDoors.Count > 0 && _airVents.Count > 0;
-            }
-
-            public static void AddInnerDoor(AirtightRoom room, IMyDoor door)
-            {
-                room._innerDoors.Add(door);
-            }
-
-            public static void AddOuterDoor(AirtightRoom room, IMyDoor door)
-            {
-                room._outerDoors.Add(door);
-            }
-
-            public static void AddAirVent(AirtightRoom room, IMyAirVent vent)
-            {
-                room._airVents.Add(vent);
             }
 
             /// <summary>
@@ -239,17 +239,6 @@ namespace IngameScript
             }
 
             /// <summary>
-            /// Updates the state variables for doors and air vents.
-            /// </summary>
-            private void UpdateRoomVariables()
-            {
-                _innerDoorOpen = _innerDoors.Exists(door => door.Status != DoorStatus.Closed);
-                _outerDoorOpen = _outerDoors.Exists(door => door.Status != DoorStatus.Closed);
-                _pressurized = _airVents.All(vent => !vent.Depressurize);
-                _oxygenLevel = _airVents.Sum(vent => vent.GetOxygenLevel()) / _airVents.Count;
-            }
-
-            /// <summary>
             /// Commands doors and air vents to reduce severity of oxygen emergency (i.e. oxygen escaping into space).
             /// </summary>
             private void HandleOxygenEmergency()
@@ -275,6 +264,17 @@ namespace IngameScript
 
                 _inEmergency = true;
                 _monitorOxygenLevel = true;
+            }
+
+            /// <summary>
+            /// Updates the state variables for doors and air vents.
+            /// </summary>
+            private void UpdateRoomVariables()
+            {
+                _innerDoorOpen = _innerDoors.Exists(door => door.Status != DoorStatus.Closed);
+                _outerDoorOpen = _outerDoors.Exists(door => door.Status != DoorStatus.Closed);
+                _pressurized = _airVents.All(vent => !vent.Depressurize);
+                _oxygenLevel = _airVents.Sum(vent => vent.GetOxygenLevel()) / _airVents.Count;
             }
         }
     }

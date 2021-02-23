@@ -106,7 +106,8 @@ namespace IngameScript
                 if (outerDoorMatch.Success)
                 {
                     var roomName = outerDoorMatch.Groups[1].Value;
-                    AddDoorToRoom(roomName, door, AirtightRoom.AddOuterDoor);
+                    var room = GetRoomByName(roomName);
+                    room.AddOuterDoor(door);
                 }
 
                 // Match doors with inner door naming convention
@@ -114,9 +115,12 @@ namespace IngameScript
                 if (innerDoorMatch.Success)
                 {
                     var firstRoomName = innerDoorMatch.Groups[1].Value;
+                    var firstRoom = GetRoomByName(firstRoomName);
+                    firstRoom.AddInnerDoor(door);
+
                     var secondRoomName = innerDoorMatch.Groups[2].Value;
-                    AddDoorToRoom(firstRoomName, door, AirtightRoom.AddInnerDoor);
-                    AddDoorToRoom(secondRoomName, door, AirtightRoom.AddInnerDoor);
+                    var secondRoom = GetRoomByName(secondRoomName);
+                    secondRoom.AddInnerDoor(door);
                 }
             }
 
@@ -138,7 +142,8 @@ namespace IngameScript
                     var roomName = ventMatch.Groups[1].Value;
                     if (_rooms.ContainsKey(roomName))
                     {
-                        AirtightRoom.AddAirVent(_rooms[roomName], vent);
+                        var room = GetRoomByName(roomName);
+                        room.AddAirVent(vent);
                     }
                 }
             }
@@ -166,9 +171,10 @@ namespace IngameScript
         }
 
         /// <summary>
-        /// Adds type of door (based on function provided) to provided room name.
+        /// Gets a room from the dictionary by its name.
+        /// If the room does not exist yet, create a new one.
         /// </summary>
-        private void AddDoorToRoom(string roomName, IMyDoor door, Action<AirtightRoom, IMyDoor> addDoorFunc)
+        private AirtightRoom GetRoomByName(string roomName)
         {
             AirtightRoom room;
             if (!_rooms.TryGetValue(roomName, out room))
@@ -176,7 +182,7 @@ namespace IngameScript
                 room = _rooms[roomName] = new AirtightRoom(roomName, this);
             }
 
-            addDoorFunc(room, door);
+            return room;
         }
     }
 }
