@@ -29,7 +29,7 @@ namespace IngameScript
             /// <summary>
             /// The door this class is wrapping around.
             /// </summary>
-            public IMyDoor Door { get; private set; }
+            private IMyDoor _door;
 
             /// <summary>
             /// Dictionary that maps room name to whether it is in an oxygen emergency.
@@ -46,10 +46,15 @@ namespace IngameScript
             /// </summary>
             private bool _opened = false;
 
+            /// <summary>
+            /// Initializes a new instance of <see cref="EmergencyDoor"/>.
+            /// </summary>
+            /// <param name="door">The door to wrap around.</param>
+            /// <param name="roomName">The name of the room that connects via this door.</param>
+            /// <param name="secondRoomName">The optional name of the second room that connects via this door.</param>
             public EmergencyDoor(IMyDoor door, string roomName, string secondRoomName = null)
             {
-                Door = door;
-
+                _door = door;
                 _emergencyStatus = new Dictionary<string, bool>()
                 {
                     { roomName, false }
@@ -60,34 +65,55 @@ namespace IngameScript
                 }
             }
 
+            /// <summary>
+            /// Enables this door if the rooms attached to it are not in an oxygen emergency.
+            /// </summary>
             public void Enable()
             {
                 if (!InEmergency())
                 {
-                    Door.Enabled = true;
+                    _door.Enabled = true;
                 }
             }
 
+            /// <summary>
+            /// Disables this door if the rooms attached to it are not in an oxygen emergency.
+            /// </summary>
             public void Disable()
             {
                 if (!InEmergency())
                 {
-                    Door.Enabled = false;
+                    _door.Enabled = false;
                 }
             }
 
-            public void UpdateEmergencyStatus(string roomName, bool inEmergency)
+            /// <summary>
+            /// Checks if door is open at all.
+            /// </summary>
+            /// <returns>True if door is not fully closed, false otherwise.</returns>
+            public bool IsOpen()
+            {
+                return _door.Status != DoorStatus.Closed;
+            }
+
+            /// <summary>
+            /// Updates the state of the door to enable behavior during oxygen emergency.
+            /// The door will be disabled by default, but can be enabled, opened, then closed before disabling again.
+            /// </summary>
+            /// <param name="roomName">The name of the room that is making the update.</param>
+            /// <param name="inEmergency">True if the room is in an oxygen emergency, false otherwise.</param>
+            public void UpdateEmergencyState(string roomName, bool inEmergency)
             {
                 var prevInEmergency = InEmergency();
                 _emergencyStatus[roomName] = inEmergency;
 
                 if (!inEmergency)
                 {
-                    // If emergency is over, re-enable door and reset state variables
+                    // If all rooms are no longer in emergency, re-enable door and reset state variables
                     if (!InEmergency())
                     {
 
-                        Door.Enabled = true;
+                        _door.Enabled = true;
                         ResetStateVariables();
                     }
 
@@ -97,8 +123,8 @@ namespace IngameScript
                 // If in emergency for first time, close door
                 if (!prevInEmergency)
                 {
-                    Door.Enabled = true;
-                    Door.CloseDoor();
+                    _door.Enabled = true;
+                    _door.CloseDoor();
                     ResetStateVariables();
                     return;
                 }
@@ -106,18 +132,19 @@ namespace IngameScript
                 // Check if the door has closed immediately after the emergency has activated
                 if (!_initClosed)
                 {
-                    if (Door.Status == DoorStatus.Closed)
+                    if (_door.Status == DoorStatus.Closed)
                     {
-                        Door.Enabled = false;
+                        _door.Enabled = false;
                         _initClosed = true;
                     }
 
                     return;
                 }
 
+                // Check if the door has been opened
                 if (!_opened)
                 {
-                    if (Door.Status != DoorStatus.Closed)
+                    if (_door.Status != DoorStatus.Closed)
                     {
                         _opened = true;
                     }
@@ -125,10 +152,11 @@ namespace IngameScript
                     return;
                 }
 
+                // Check if door has been closed afterwards
                 // Cycle has completed, disable door again and reset state variables
-                if (Door.Status == DoorStatus.Closed)
+                if (_door.Status == DoorStatus.Closed)
                 {
-                    Door.Enabled = false;
+                    _door.Enabled = false;
                     ResetStateVariables();
                 }
             }

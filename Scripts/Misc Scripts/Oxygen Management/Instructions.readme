@@ -3,7 +3,13 @@
 
 This script manages airlocks and other airtight rooms so that oxygen is not lost.
 
-Please use the following naming convention for doors/vents (with no brackets necessary).
+----- Airtightness Check -----
+If a room loses airtightness, the doors will disable by default.
+This behavior can be overwritten by manually enabling the door.
+If the door is opened, then closed manually, the door will automatically disable itself again until the room is airtight again.
+
+----- Naming Conventions -----
+Please use the following naming convention for doors and vents (with no brackets necessary).
 Note that the names just need to contain the following substrings.
 The script will also distinguish between identical room names on different subgrids.
 * Outer doors (which lead to vacuum/space): [Room] Outer

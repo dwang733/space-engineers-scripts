@@ -93,8 +93,8 @@ namespace IngameScript
             /// </summary>
             public void UpdateState()
             {
-                _innerDoorOpen = _innerDoors.Exists(door => door.Door.Status != DoorStatus.Closed);
-                _outerDoorOpen = _outerDoors.Exists(door => door.Door.Status != DoorStatus.Closed);
+                _innerDoorOpen = _innerDoors.Exists(door => door.IsOpen());
+                _outerDoorOpen = _outerDoors.Exists(door => door.IsOpen());
                 _pressurized = _airVents.All(vent => !vent.Depressurize);
                 _oxygenLevel = _airVents.Sum(vent => vent.GetOxygenLevel()) / _airVents.Count;
             }
@@ -135,17 +135,18 @@ namespace IngameScript
                 // Check the room status
                 var inEmergencyNow = _pressurized ? CheckPressurizedRoom() : CheckDepressurizedRoom();
 
-                // If emergency is over, revert air vents to previous status and re-enable doors
+                // If emergency is over, revert air vents to previous status and re-enable doors if possible
                 if (_inEmergency && !inEmergencyNow)
                 {
                     _program.Echo($"Emergency for {_roomName} is over");
                     _airVents.ForEach(vent => vent.Depressurize = !_pressurizedBeforeEmergency);
 
                     // Update state of all doors
-                    _innerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, false));
-                    _outerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, false));
+                    _innerDoors.ForEach(door => door.UpdateEmergencyState(_roomName, false));
+                    _outerDoors.ForEach(door => door.UpdateEmergencyState(_roomName, false));
                 }
 
+                // Update remaining state variables
                 _inEmergency = inEmergencyNow;
                 _prevPressurized = _pressurized;
             }
@@ -268,8 +269,8 @@ namespace IngameScript
                 _airVents.ForEach(vent => vent.Depressurize = true);
 
                 // Update state of all doors
-                _innerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, true));
-                _outerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, true));
+                _innerDoors.ForEach(door => door.UpdateEmergencyState(_roomName, true));
+                _outerDoors.ForEach(door => door.UpdateEmergencyState(_roomName, true));
 
                 // If this is the very start of the emergency, close all doors
                 if (!_inEmergency)
