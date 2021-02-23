@@ -137,11 +137,6 @@ namespace IngameScript
                 _program.Echo($"Room [{_roomName}] has {_innerDoors.Count} inner doors, {_outerDoors.Count} outer doors, and {_airVents.Count} air vents.");
             }
 
-            public bool IsInnerRoom()
-            {
-                return _outerDoors.Count == 0;
-            }
-
             public bool IsValidRoom()
             {
                 return _innerDoors.Count > 0 && _airVents.Count > 0;

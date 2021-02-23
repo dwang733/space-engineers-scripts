@@ -143,15 +143,6 @@ namespace IngameScript
                 }
             }
 
-            // Prune rooms that only have inner doors
-            foreach (var roomName in _rooms.Keys.ToList())
-            {
-                if (_rooms[roomName].IsInnerRoom())
-                {
-                    _rooms.Remove(roomName);
-                }
-            }
-
             // Confirm that rooms are valid
             var roomsAreValid = true;
             foreach (var roomEntry in _rooms)
@@ -159,7 +150,7 @@ namespace IngameScript
                 var room = roomEntry.Value;
                 if (!room.IsValidRoom())
                 {
-                    Echo($"{roomEntry.Key} room is not valid. Please check if there is at least 1 outer door, inner door, and air vent.");
+                    Echo($"{roomEntry.Key} room is not valid. Please check if there is at least 1 inner door and 1 air vent.");
                     roomsAreValid = false;
                 }
                 else
