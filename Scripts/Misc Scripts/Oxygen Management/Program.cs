@@ -68,10 +68,24 @@ namespace IngameScript
                     InitializeRooms();
                 }
 
+                // Commands from depressurized rooms need priority, so they should run last
+                var pressurizedRooms = new List<AirtightRoom>();
+                var depressurizedRooms = new List<AirtightRoom>();
                 foreach (var room in _rooms.Values)
                 {
-                    room.CheckRoomSafety();
+                    room.UpdateState();
+                    if (room.IsPressurized())
+                    {
+                        pressurizedRooms.Add(room);
+                    }
+                    else
+                    {
+                        depressurizedRooms.Add(room);
+                    }
                 }
+
+                pressurizedRooms.ForEach(room => room.CheckRoomSafety());
+                depressurizedRooms.ForEach(room => room.CheckRoomSafety());
             }
             catch (Exception e)
             {
@@ -107,7 +121,9 @@ namespace IngameScript
                 {
                     var roomName = outerDoorMatch.Groups[1].Value;
                     var room = GetRoomByName(roomName);
-                    room.AddOuterDoor(door);
+                    var emergencyDoor = new EmergencyDoor(door, roomName);
+
+                    room.AddOuterDoor(emergencyDoor);
                 }
 
                 // Match doors with inner door naming convention
@@ -116,11 +132,12 @@ namespace IngameScript
                 {
                     var firstRoomName = innerDoorMatch.Groups[1].Value;
                     var firstRoom = GetRoomByName(firstRoomName);
-                    firstRoom.AddInnerDoor(door);
-
                     var secondRoomName = innerDoorMatch.Groups[2].Value;
                     var secondRoom = GetRoomByName(secondRoomName);
-                    secondRoom.AddInnerDoor(door);
+
+                    var emergencyDoor = new EmergencyDoor(door, firstRoomName, secondRoomName);
+                    firstRoom.AddInnerDoor(emergencyDoor);
+                    secondRoom.AddInnerDoor(emergencyDoor);
                 }
             }
 

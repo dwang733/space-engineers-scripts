@@ -29,8 +29,8 @@ namespace IngameScript
             private readonly string _roomName;
             private readonly Program _program;
 
-            private readonly List<IMyDoor> _innerDoors = new List<IMyDoor>();
-            private readonly List<IMyDoor> _outerDoors = new List<IMyDoor>();
+            private readonly List<EmergencyDoor> _innerDoors = new List<EmergencyDoor>();
+            private readonly List<EmergencyDoor> _outerDoors = new List<EmergencyDoor>();
             private readonly List<IMyAirVent> _airVents = new List<IMyAirVent>();
 
             /// <summary>
@@ -89,12 +89,26 @@ namespace IngameScript
             }
 
             /// <summary>
+            /// Updates the state variables for doors and air vents.
+            /// </summary>
+            public void UpdateState()
+            {
+                _innerDoorOpen = _innerDoors.Exists(door => door.Door.Status != DoorStatus.Closed);
+                _outerDoorOpen = _outerDoors.Exists(door => door.Door.Status != DoorStatus.Closed);
+                _pressurized = _airVents.All(vent => !vent.Depressurize);
+                _oxygenLevel = _airVents.Sum(vent => vent.GetOxygenLevel()) / _airVents.Count;
+            }
+
+            public bool IsPressurized()
+            {
+                return _pressurized;
+            }
+
+            /// <summary>
             /// Checks the room to ensure that no oxygen is lost.
             /// </summary>
             public void CheckRoomSafety()
             {
-                UpdateRoomVariables();
-
                 // Handle scenario where room is no longer airtight
                 var cannotPressurize = _airVents.Any(vent => !vent.CanPressurize);
                 if (cannotPressurize && !_outerDoorOpen)
@@ -121,23 +135,27 @@ namespace IngameScript
                 // Check the room status
                 var inEmergencyNow = _pressurized ? CheckPressurizedRoom() : CheckDepressurizedRoom();
 
-                // If emergency is over, revert air vents to previous status
+                // If emergency is over, revert air vents to previous status and re-enable doors
                 if (_inEmergency && !inEmergencyNow)
                 {
                     _program.Echo($"Emergency for {_roomName} is over");
                     _airVents.ForEach(vent => vent.Depressurize = !_pressurizedBeforeEmergency);
+
+                    // Update state of all doors
+                    _innerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, false));
+                    _outerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, false));
                 }
 
                 _inEmergency = inEmergencyNow;
                 _prevPressurized = _pressurized;
             }
 
-            public void AddInnerDoor(IMyDoor door)
+            public void AddInnerDoor(EmergencyDoor door)
             {
                 _innerDoors.Add(door);
             }
 
-            public void AddOuterDoor(IMyDoor door)
+            public void AddOuterDoor(EmergencyDoor door)
             {
                 _outerDoors.Add(door);
             }
@@ -172,10 +190,10 @@ namespace IngameScript
                 }
 
                 // Make sure outer doors are disabled
-                _outerDoors.ForEach(door => door.Enabled = false);
+                _outerDoors.ForEach(door => door.Disable());
 
                 // Make sure inner doors are enabled
-                _innerDoors.ForEach(door => door.Enabled = true);
+                _innerDoors.ForEach(door => door.Enable());
 
                 _monitorOxygenLevel = true;
                 return false;
@@ -201,7 +219,8 @@ namespace IngameScript
                 // Disable outer doors if inner doors are open
                 if (_innerDoorOpen)
                 {
-                    _outerDoors.ForEach(door => door.Enabled = false);
+                    _program.Echo($"Inner doors are open in {_roomName} - disabling outer doors");
+                    _outerDoors.ForEach(door => door.Disable());
                     _monitorOxygenLevel = true;
                     return false;
                 }
@@ -209,7 +228,8 @@ namespace IngameScript
                 // Disable inner doors if outer doors are open
                 if (_outerDoorOpen)
                 {
-                    _innerDoors.ForEach(door => door.Enabled = false);
+                    _program.Echo($"Outer doors are open in {_roomName} - disabling inner doors");
+                    _innerDoors.ForEach(door => door.Disable());
                     _monitorOxygenLevel = true;
                     return false;
                 }
@@ -221,15 +241,16 @@ namespace IngameScript
                     var oxygenLevelDiff = _prevOxygenLevel - _oxygenLevel;
                     if (_monitorOxygenLevel && (_oxygenLevel == 0 || Math.Abs(oxygenLevelDiff) < 0.0005))
                     {
-                        _innerDoors.ForEach(door => door.Enabled = true);
-                        _outerDoors.ForEach(door => door.Enabled = true);
+                        _innerDoors.ForEach(door => door.Enable());
+                        _outerDoors.ForEach(door => door.Enable());
                         _monitorOxygenLevel = false;
                     }
                     // If room has oxygen, lock outer doors until fully depressurized
                     else if (_oxygenLevel > 0)
                     {
-                        _innerDoors.ForEach(door => door.Enabled = true);
-                        _outerDoors.ForEach(door => door.Enabled = false);
+                        _program.Echo($"Locking all doors in {_roomName} until depressurized");
+                        _innerDoors.ForEach(door => door.Enable());
+                        _outerDoors.ForEach(door => door.Disable());
                         _monitorOxygenLevel = true;
                     }
                 }
@@ -243,38 +264,22 @@ namespace IngameScript
             /// </summary>
             private void HandleOxygenEmergency()
             {
-                // Close all doors and set all vents to depressurize
-                _outerDoors.ForEach(door =>
-                {
-                    door.Enabled = true;
-                    door.CloseDoor();
-                });
-                _innerDoors.ForEach(door =>
-                {
-                    door.Enabled = true;
-                    door.CloseDoor();
-                });
+                // Set all vents to depressurize
                 _airVents.ForEach(vent => vent.Depressurize = true);
 
-                // If this is the very start of the emergency, mark the previous air vents' status
+                // Update state of all doors
+                _innerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, true));
+                _outerDoors.ForEach(door => door.UpdateEmergencyStatus(_roomName, true));
+
+                // If this is the very start of the emergency, close all doors
                 if (!_inEmergency)
                 {
+                    // Mark the previous air vents' status
                     _pressurizedBeforeEmergency = _pressurized;
                 }
 
                 _inEmergency = true;
                 _monitorOxygenLevel = true;
-            }
-
-            /// <summary>
-            /// Updates the state variables for doors and air vents.
-            /// </summary>
-            private void UpdateRoomVariables()
-            {
-                _innerDoorOpen = _innerDoors.Exists(door => door.Status != DoorStatus.Closed);
-                _outerDoorOpen = _outerDoors.Exists(door => door.Status != DoorStatus.Closed);
-                _pressurized = _airVents.All(vent => !vent.Depressurize);
-                _oxygenLevel = _airVents.Sum(vent => vent.GetOxygenLevel()) / _airVents.Count;
             }
         }
     }
