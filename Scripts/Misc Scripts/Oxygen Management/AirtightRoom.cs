@@ -95,6 +95,7 @@ namespace IngameScript
                 if (!_prevPressurized.HasValue)
                 {
                     _prevPressurized = _pressurized;
+                    _monitorOxygenLevel = true;
                 }
                 else if (_prevPressurized.Value != _pressurized && (_innerDoorOpen || _outerDoorOpen))
                 {
@@ -117,19 +118,9 @@ namespace IngameScript
                 _prevPressurized = _pressurized;
             }
 
-            public int InnerDoorsCount()
+            public void EchoRoomInfo()
             {
-                return _innerDoors.Count;
-            }
-
-            public int OuterDoorsCount()
-            {
-                return _outerDoors.Count;
-            }
-
-            public int AirVentsCount()
-            {
-                return _airVents.Count;
+                _program.Echo($"Room [{_roomName}] has {_innerDoors.Count} inner doors, {_outerDoors.Count} outer doors, and {_airVents.Count} air vents.");
             }
 
             public bool IsInnerRoom()

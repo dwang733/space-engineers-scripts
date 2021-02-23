@@ -164,7 +164,7 @@ namespace IngameScript
                 }
                 else
                 {
-                    Echo($"Room [{roomEntry.Key}] has {room.InnerDoorsCount()} inner doors, {room.OuterDoorsCount()} outer doors, and {room.AirVentsCount()} air vents.");
+                    room.EchoRoomInfo();
                 }
             }
 
