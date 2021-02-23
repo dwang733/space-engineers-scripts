@@ -24,7 +24,7 @@ namespace IngameScript
         /// <summary>
         /// A wrapper class around a door to share state information between rooms in case of emergency.
         /// </summary>
-        public class EmergencyDoor
+        public class AirtightDoor
         {
             /// <summary>
             /// The door this class is wrapping around.
@@ -47,12 +47,12 @@ namespace IngameScript
             private bool _opened = false;
 
             /// <summary>
-            /// Initializes a new instance of <see cref="EmergencyDoor"/>.
+            /// Initializes a new instance of <see cref="AirtightDoor"/>.
             /// </summary>
             /// <param name="door">The door to wrap around.</param>
             /// <param name="roomName">The name of the room that connects via this door.</param>
             /// <param name="secondRoomName">The optional name of the second room that connects via this door.</param>
-            public EmergencyDoor(IMyDoor door, string roomName, string secondRoomName = null)
+            public AirtightDoor(IMyDoor door, string roomName, string secondRoomName = null)
             {
                 _door = door;
                 _emergencyStatus = new Dictionary<string, bool>()

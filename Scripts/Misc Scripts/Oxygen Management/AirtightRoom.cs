@@ -29,8 +29,8 @@ namespace IngameScript
             private readonly string _roomName;
             private readonly Program _program;
 
-            private readonly List<EmergencyDoor> _innerDoors = new List<EmergencyDoor>();
-            private readonly List<EmergencyDoor> _outerDoors = new List<EmergencyDoor>();
+            private readonly List<AirtightDoor> _innerDoors = new List<AirtightDoor>();
+            private readonly List<AirtightDoor> _outerDoors = new List<AirtightDoor>();
             private readonly List<IMyAirVent> _airVents = new List<IMyAirVent>();
 
             /// <summary>
@@ -151,12 +151,12 @@ namespace IngameScript
                 _prevPressurized = _pressurized;
             }
 
-            public void AddInnerDoor(EmergencyDoor door)
+            public void AddInnerDoor(AirtightDoor door)
             {
                 _innerDoors.Add(door);
             }
 
-            public void AddOuterDoor(EmergencyDoor door)
+            public void AddOuterDoor(AirtightDoor door)
             {
                 _outerDoors.Add(door);
             }

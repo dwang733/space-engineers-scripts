@@ -121,7 +121,7 @@ namespace IngameScript
                 {
                     var roomName = outerDoorMatch.Groups[1].Value;
                     var room = GetRoomByName(roomName);
-                    var emergencyDoor = new EmergencyDoor(door, roomName);
+                    var emergencyDoor = new AirtightDoor(door, roomName);
 
                     room.AddOuterDoor(emergencyDoor);
                 }
@@ -135,7 +135,7 @@ namespace IngameScript
                     var secondRoomName = innerDoorMatch.Groups[2].Value;
                     var secondRoom = GetRoomByName(secondRoomName);
 
-                    var emergencyDoor = new EmergencyDoor(door, firstRoomName, secondRoomName);
+                    var emergencyDoor = new AirtightDoor(door, firstRoomName, secondRoomName);
                     firstRoom.AddInnerDoor(emergencyDoor);
                     secondRoom.AddInnerDoor(emergencyDoor);
                 }
