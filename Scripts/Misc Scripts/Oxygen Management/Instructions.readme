@@ -14,4 +14,4 @@ Note that the names just need to contain the following substrings.
 The script will also distinguish between identical room names on different subgrids.
 * Outer doors (which lead to vacuum/space): [Room] Outer
 * Inner doors (which lead to pressurized areas): [Room 1]/[Room 2]
-* Air vents: [Room] Vent
+* Air vents: [Room] Vent, [Room] Air Vent, or [Room] Airvent

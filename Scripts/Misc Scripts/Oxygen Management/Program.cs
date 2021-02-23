@@ -37,7 +37,7 @@ namespace IngameScript
         /// Matches air vent name with pattern "[Room] Vent".
         /// </summary>
         private System.Text.RegularExpressions.Regex VentRegex = new System.Text.RegularExpressions.Regex(
-            @"(\w+)\s+Vent", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            @"(\w+)\s+(?:Air\s*)?Vent", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
         /// <summary>
         /// The grid terminal system helper.
