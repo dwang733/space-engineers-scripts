@@ -22,7 +22,7 @@ namespace IngameScript
     partial class Program
     {
         /// <summary>
-        /// Defines an airtight room with outer doors (to vacuum/space), inner doors (to pressurized area), and air vents.
+        /// Defines an airtight room with air vents, inner doors (to pressurized area), and optional outer doors (to vacuum/space)
         /// </summary>
         public class AirtightRoom
         {
@@ -35,21 +35,25 @@ namespace IngameScript
 
             /// <summary>
             /// True if any inner door is not fully closed, false otherwise.
+            /// Updated as a state variable.
             /// </summary>
             bool _innerDoorOpen = false;
 
             /// <summary>
             /// True if any outer door is not fully closed, false otherwise.
+            /// Updated as a state variable.
             /// </summary>
             bool _outerDoorOpen = false;
 
             /// <summary>
             /// True if all vents are set to pressurized, false otherwise.
+            /// Updated as a state variable.
             /// </summary>
             bool _pressurized = false;
 
             /// <summary>
             /// The average oxygen level of the room, as a percentage from 0.0-1.0.
+            /// Updated as a state variable.
             /// </summary>
             float _oxygenLevel = 0;
 
@@ -91,7 +95,17 @@ namespace IngameScript
             {
                 UpdateRoomVariables();
 
-                // If any doors are open while trying to change air vent depressurize status, revert back for safety.
+                // Handle scenario where room is no longer airtight
+                var cannotPressurize = _airVents.Any(vent => !vent.CanPressurize);
+                if (cannotPressurize && !_outerDoorOpen)
+                {
+                    _program.Echo($"Oxygen emergency in {_roomName}: room is no longer airtight!");
+                    HandleOxygenEmergency();
+                    _monitorOxygenLevel = true;
+                    return;
+                }
+
+                // If any doors are open while trying to change air vent depressurize status, revert back for safety
                 if (!_prevPressurized.HasValue)
                 {
                     _prevPressurized = _pressurized;
