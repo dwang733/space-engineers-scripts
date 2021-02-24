@@ -17,6 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Mixins\Shared Library\Shared_Library.projitems*{36d0a989-2fb3-4c86-bc2a-7056f67ae024}*SharedItemsImports = 4
 		..\..\Mixins\Shared Library\Shared_Library.projitems*{61eba249-19f3-48b6-a25b-a4cee90168ba}*SharedItemsImports = 13
 		..\..\Mixins\Shared Library\Shared_Library.projitems*{b6ded759-c077-497a-97e0-d20ab437d678}*SharedItemsImports = 4
 		..\..\Mixins\Shared Library\Shared_Library.projitems*{f415546d-fdf6-459f-8b06-aee88063338e}*SharedItemsImports = 4
