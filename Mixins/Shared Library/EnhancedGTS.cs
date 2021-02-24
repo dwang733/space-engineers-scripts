@@ -22,13 +22,19 @@ namespace IngameScript
     partial class Program
     {
         /// <summary>
-        /// A helper class to replace the base Grid Terminal System.
+        /// <para>A replacement for the base Grid Terminal System.</para>
+        /// <example>
+        /// You can hide the base implementation with the following code in Program.cs:
+        /// <code>
+        /// new EnhancedGTS GridTerminalSystem;
+        /// </code>
+        /// </example>
         /// </summary>
-        public class GTSHelper
+        public class EnhancedGTS
         {
             private readonly MyGridProgram _program;
 
-            public GTSHelper(MyGridProgram program)
+            public EnhancedGTS(MyGridProgram program)
             {
                 _program = program;
             }
