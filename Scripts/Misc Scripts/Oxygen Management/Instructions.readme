@@ -3,7 +3,7 @@
 
 This script manages airlocks and other airtight rooms so that oxygen is not lost.
 Arguments:
-"-emergency"/"-recovery": Treats all rooms as not airtight. See "Airtightness Check" for expected behavior.
+"-emergency"/"-recovery": Puts all rooms into oxygen emergency mode. See "Oxygen Emergency Mode" for expected behavior.
 
 ----- Oxygen Emergency Mode -----
 This mode will activate in several scenarios:
