@@ -40,6 +40,16 @@ namespace IngameScript
             @"(\w+)\s+(?:Air\s*)?Vent", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
         /// <summary>
+        /// The switches that a user can pass via arguments that will activate oxygen emergency mode.
+        /// </summary>
+        private readonly string[] _userEmergencySwitches = new[] { "emergency", "recovery" };
+
+        /// <summary>
+        /// The command line utility class.
+        /// </summary>
+        private readonly MyCommandLine _myCommandLine = new MyCommandLine();
+
+        /// <summary>
         /// The grid terminal system helper.
         /// </summary>
         private readonly GTSHelper _gtsHelper;
@@ -47,7 +57,12 @@ namespace IngameScript
         /// <summary>
         /// The airtight rooms that this program manages.
         /// </summary>
-        private Dictionary<string, AirtightRoom> _rooms;
+        private Dictionary<string, AirtightRoom> _rooms = new Dictionary<string, AirtightRoom>();
+
+        /// <summary>
+        /// True if the user manually set the rooms to be in an oxygen emergency.
+        /// </summary>
+        private bool _inUserEmergency = false;
 
         public Program()
         {
@@ -66,6 +81,29 @@ namespace IngameScript
                 if ((updateSource & (UpdateType.Trigger | UpdateType.Terminal)) != 0)
                 {
                     InitializeRooms();
+
+                    if (!_myCommandLine.TryParse(argument))
+                    {
+                        Echo("No argument was given.");
+                        if (_inUserEmergency)
+                        {
+                            Echo("User manually turned off oxygen emergency mode!");
+                        }
+
+                        _inUserEmergency = false;
+                    }
+                    else if (_userEmergencySwitches.Any(arg => _myCommandLine.Switch(arg)))
+                    {
+                        Echo("User manually activated oxygen emergency mode!");
+                        _inUserEmergency = true;
+                    }
+                    else
+                    {
+                        Echo("Argument not recognized. Please use \"emergency\" or \"recovery\" flag.");
+                        _inUserEmergency = false;
+                    }
+
+                    return;
                 }
 
                 // Commands from depressurized rooms need priority, so they should run last
@@ -84,8 +122,8 @@ namespace IngameScript
                     }
                 }
 
-                pressurizedRooms.ForEach(room => room.CheckRoomSafety());
-                depressurizedRooms.ForEach(room => room.CheckRoomSafety());
+                pressurizedRooms.ForEach(room => room.CheckRoomSafety(_inUserEmergency));
+                depressurizedRooms.ForEach(room => room.CheckRoomSafety(_inUserEmergency));
             }
             catch (Exception e)
             {
@@ -102,7 +140,13 @@ namespace IngameScript
         /// <exception cref="ArgumentNullException">Throws when doors or vents cannot be found, or a room is invalid.</exception>
         private void InitializeRooms()
         {
-            _rooms = new Dictionary<string, AirtightRoom>();
+            var newRoomNames = new HashSet<string>();
+
+            // Clear doors and vents from existing rooms.
+            foreach (var room in _rooms.Values)
+            {
+                room.ClearDoorsAndVents();
+            }
 
             // Get all doors
             var doors = new List<IMyDoor>();
@@ -125,6 +169,7 @@ namespace IngameScript
                     var airtightDoor = new AirtightDoor(door, roomName);
 
                     room.AddOuterDoor(airtightDoor);
+                    newRoomNames.Add(roomName);
                     continue;
                 }
 
@@ -140,6 +185,18 @@ namespace IngameScript
                     var airtightDoor = new AirtightDoor(door, firstRoomName, secondRoomName);
                     firstRoom.AddInnerDoor(airtightDoor);
                     secondRoom.AddInnerDoor(airtightDoor);
+
+                    newRoomNames.Add(firstRoomName);
+                    newRoomNames.Add(secondRoomName);
+                }
+            }
+
+            // Get rid of rooms that no longer exist
+            foreach (var roomName in _rooms.Keys.ToList())
+            {
+                if (!newRoomNames.Contains(roomName))
+                {
+                    _rooms.Remove(roomName);
                 }
             }
 

@@ -29,9 +29,9 @@ namespace IngameScript
             private readonly string _roomName;
             private readonly Program _program;
 
-            private readonly List<AirtightDoor> _innerDoors = new List<AirtightDoor>();
-            private readonly List<AirtightDoor> _outerDoors = new List<AirtightDoor>();
-            private readonly List<IMyAirVent> _airVents = new List<IMyAirVent>();
+            private List<AirtightDoor> _innerDoors = new List<AirtightDoor>();
+            private List<AirtightDoor> _outerDoors = new List<AirtightDoor>();
+            private List<IMyAirVent> _airVents = new List<IMyAirVent>();
 
             /// <summary>
             /// True if any inner door is not fully closed, false otherwise.
@@ -99,17 +99,22 @@ namespace IngameScript
                 _oxygenLevel = _airVents.Sum(vent => vent.GetOxygenLevel()) / _airVents.Count;
             }
 
-            public bool IsPressurized()
-            {
-                return _pressurized;
-            }
-
             /// <summary>
             /// Checks the room to ensure that no oxygen is lost.
             /// </summary>
-            public void CheckRoomSafety()
+            /// <param name="userEmergencyMode">True if the user manually set the grid to oxygen emergency mode, false otherwise.</param>
+            public void CheckRoomSafety(bool userEmergencyMode)
             {
-                // Handle scenario where room is no longer airtight
+                // Check if user activated emergency mode manually
+                if (userEmergencyMode)
+                {
+                    _program.Echo($"Oxygen emergency in {_roomName}: manually activated by user");
+                    HandleOxygenEmergency();
+                    _monitorOxygenLevel = true;
+                    return;
+                }
+
+                // Check if room is no longer airtight
                 var cannotPressurize = _airVents.Any(vent => !vent.CanPressurize);
                 if (cannotPressurize && !_outerDoorOpen)
                 {
@@ -136,7 +141,7 @@ namespace IngameScript
                 var inEmergencyNow = _pressurized ? CheckPressurizedRoom() : CheckDepressurizedRoom();
 
                 // If emergency is over, revert air vents to previous status and disable room's emergency status on door
-                if (_inEmergency && !inEmergencyNow)
+                if (_inEmergency && (!inEmergencyNow || !userEmergencyMode))
                 {
                     _program.Echo($"Emergency for {_roomName} is over");
                     _airVents.ForEach(vent => vent.Depressurize = !_pressurizedBeforeEmergency);
@@ -166,6 +171,13 @@ namespace IngameScript
                 _airVents.Add(vent);
             }
 
+            public void ClearDoorsAndVents()
+            {
+                _innerDoors = new List<AirtightDoor>();
+                _outerDoors = new List<AirtightDoor>();
+                _airVents = new List<IMyAirVent>();
+            }
+
             public void EchoRoomInfo()
             {
                 _program.Echo($"Room [{_roomName}] has {_innerDoors.Count} inner doors, {_outerDoors.Count} outer doors, and {_airVents.Count} air vents.");
@@ -174,6 +186,11 @@ namespace IngameScript
             public bool IsValidRoom()
             {
                 return _innerDoors.Count > 0 && _airVents.Count > 0;
+            }
+
+            public bool IsPressurized()
+            {
+                return _pressurized;
             }
 
             /// <summary>

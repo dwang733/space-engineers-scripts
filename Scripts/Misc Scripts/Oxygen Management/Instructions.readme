@@ -2,11 +2,18 @@
 -----------
 
 This script manages airlocks and other airtight rooms so that oxygen is not lost.
+Arguments:
+"-emergency"/"-recovery": Treats all rooms as not airtight. See "Airtightness Check" for expected behavior.
 
------ Airtightness Check -----
-If a room loses airtightness, the doors will disable by default.
-This behavior can be overwritten by manually enabling the door.
-If the door is opened, then closed manually, the door will automatically disable itself again until the room is airtight again.
+----- Oxygen Emergency Mode -----
+This mode will activate in several scenarios:
+1) A room loses airtightness when the doors are closed
+2) Outer doors are opened in a pressurized room
+3) Outer and inner doors are opened at the same time
+4) Manually by the user
+
+The doors will be disabled by default, but this can be manually overridden via the door's control panel.
+If the door is opened and closed (manually), the door will automatically disable itself again until the room is no longer in emergency mode.
 
 ----- Naming Conventions -----
 Please use the following naming convention for doors and vents (with no brackets necessary).
