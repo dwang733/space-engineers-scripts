@@ -9,7 +9,7 @@
     <Import_RootNamespace>IngameScript</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)GTSHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EnhancedGTS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ItemTypeHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuotaAssembler.cs" />
   </ItemGroup>

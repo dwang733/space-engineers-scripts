@@ -22,6 +22,11 @@ namespace IngameScript
     partial class Program : MyGridProgram
     {
         /// <summary>
+        /// The grid terminal system replacement
+        /// </summary>
+        private new readonly EnhancedGTS GridTerminalSystem;
+
+        /// <summary>
         /// Matches inner door name with pattern "[Room 1]/[Room 2]".
         /// </summary>
         private System.Text.RegularExpressions.Regex InnerDoorRegex = new System.Text.RegularExpressions.Regex(
@@ -50,11 +55,6 @@ namespace IngameScript
         private readonly MyCommandLine _myCommandLine = new MyCommandLine();
 
         /// <summary>
-        /// The grid terminal system helper.
-        /// </summary>
-        private readonly GTSHelper _gtsHelper;
-
-        /// <summary>
         /// The airtight rooms that this program manages.
         /// </summary>
         private Dictionary<string, AirtightRoom> _rooms = new Dictionary<string, AirtightRoom>();
@@ -68,7 +68,7 @@ namespace IngameScript
         {
             Echo("Script started!");
 
-            _gtsHelper = new GTSHelper(this);
+            GridTerminalSystem = new EnhancedGTS(this);
             InitializeRooms();
 
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
@@ -150,7 +150,7 @@ namespace IngameScript
 
             // Get all doors
             var doors = new List<IMyDoor>();
-            _gtsHelper.GetBlocksOfType(doors);
+            GridTerminalSystem.GetBlocksOfType(doors);
             if (doors.Count == 0)
             {
                 Echo($"Could not find doors.");
@@ -202,7 +202,7 @@ namespace IngameScript
 
             // Get all air vents
             var vents = new List<IMyAirVent>();
-            _gtsHelper.GetBlocksOfType(vents);
+            GridTerminalSystem.GetBlocksOfType(vents);
             if (vents.Count == 0)
             {
                 Echo($"Could not find vents.");
