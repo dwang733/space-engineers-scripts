@@ -97,13 +97,14 @@ namespace IngameScript
         }
 
         /// <summary>
-        /// Finds defined airtight rooms and their doors and vents.
+        /// Finds all airtight rooms and their doors and vents.
         /// </summary>
-        /// <exception cref="ArgumentNullException">Throws when doors or vents cannot be found.</exception>
+        /// <exception cref="ArgumentNullException">Throws when doors or vents cannot be found, or a room is invalid.</exception>
         private void InitializeRooms()
         {
             _rooms = new Dictionary<string, AirtightRoom>();
 
+            // Get all doors
             var doors = new List<IMyDoor>();
             _gtsHelper.GetBlocksOfType(doors);
             if (doors.Count == 0)
@@ -121,9 +122,10 @@ namespace IngameScript
                 {
                     var roomName = outerDoorMatch.Groups[1].Value;
                     var room = GetRoomByName(roomName);
-                    var emergencyDoor = new AirtightDoor(door, roomName);
+                    var airtightDoor = new AirtightDoor(door, roomName);
 
-                    room.AddOuterDoor(emergencyDoor);
+                    room.AddOuterDoor(airtightDoor);
+                    continue;
                 }
 
                 // Match doors with inner door naming convention
@@ -135,13 +137,13 @@ namespace IngameScript
                     var secondRoomName = innerDoorMatch.Groups[2].Value;
                     var secondRoom = GetRoomByName(secondRoomName);
 
-                    var emergencyDoor = new AirtightDoor(door, firstRoomName, secondRoomName);
-                    firstRoom.AddInnerDoor(emergencyDoor);
-                    secondRoom.AddInnerDoor(emergencyDoor);
+                    var airtightDoor = new AirtightDoor(door, firstRoomName, secondRoomName);
+                    firstRoom.AddInnerDoor(airtightDoor);
+                    secondRoom.AddInnerDoor(airtightDoor);
                 }
             }
 
-            // Assign air vents to existing rooms
+            // Get all air vents
             var vents = new List<IMyAirVent>();
             _gtsHelper.GetBlocksOfType(vents);
             if (vents.Count == 0)
@@ -159,8 +161,7 @@ namespace IngameScript
                     var roomName = ventMatch.Groups[1].Value;
                     if (_rooms.ContainsKey(roomName))
                     {
-                        var room = GetRoomByName(roomName);
-                        room.AddAirVent(vent);
+                        _rooms[roomName].AddAirVent(vent);
                     }
                 }
             }
@@ -170,14 +171,12 @@ namespace IngameScript
             foreach (var roomEntry in _rooms)
             {
                 var room = roomEntry.Value;
+                room.EchoRoomInfo();
+                
                 if (!room.IsValidRoom())
                 {
                     Echo($"{roomEntry.Key} room is not valid. Please check if there is at least 1 inner door and 1 air vent.");
                     roomsAreValid = false;
-                }
-                else
-                {
-                    room.EchoRoomInfo();
                 }
             }
 

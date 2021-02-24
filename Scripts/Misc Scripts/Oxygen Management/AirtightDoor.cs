@@ -22,7 +22,7 @@ namespace IngameScript
     partial class Program
     {
         /// <summary>
-        /// A wrapper class around a door to share state information between rooms in case of emergency.
+        /// A wrapper class around a door that tracks and handles oxygen emergencies.
         /// </summary>
         public class AirtightDoor
         {
@@ -100,7 +100,7 @@ namespace IngameScript
             /// Updates the state of the door to enable behavior during oxygen emergency.
             /// The door will be disabled by default, but can be enabled, opened, then closed before disabling again.
             /// </summary>
-            /// <param name="roomName">The name of the room that is making the update.</param>
+            /// <param name="roomName">The name of the room that updating the state.</param>
             /// <param name="inEmergency">True if the room is in an oxygen emergency, false otherwise.</param>
             public void UpdateEmergencyState(string roomName, bool inEmergency)
             {
@@ -144,11 +144,7 @@ namespace IngameScript
                 // Check if the door has been opened
                 if (!_opened)
                 {
-                    if (_door.Status != DoorStatus.Closed)
-                    {
-                        _opened = true;
-                    }
-
+                    _opened = IsOpen();
                     return;
                 }
 
@@ -161,12 +157,19 @@ namespace IngameScript
                 }
             }
 
+            /// <summary>
+            /// Resets the state variables of the door.
+            /// </summary>
             private void ResetStateVariables()
             {
                 _initClosed = false;
                 _opened = false;
             }
 
+            /// <summary>
+            /// Checks if the door is dealing with an oxygen emergency.
+            /// </summary>
+            /// <returns>True if either room that connects via this door is experiencing an oxygen emergency.</returns>
             private bool InEmergency()
             {
                 return _emergencyStatus.Values.Any(e => e);

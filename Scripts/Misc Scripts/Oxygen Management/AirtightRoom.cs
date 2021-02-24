@@ -58,7 +58,7 @@ namespace IngameScript
             float _oxygenLevel = 0;
 
             /// <summary>
-            /// True if the oxygen level needs to be monitored when the room is in depressurize mode.
+            /// True if the oxygen level needs to be checked when the room enters depressurize mode, false otherwise.
             /// </summary>
             private bool _monitorOxygenLevel = false;
 
@@ -135,7 +135,7 @@ namespace IngameScript
                 // Check the room status
                 var inEmergencyNow = _pressurized ? CheckPressurizedRoom() : CheckDepressurizedRoom();
 
-                // If emergency is over, revert air vents to previous status and re-enable doors if possible
+                // If emergency is over, revert air vents to previous status and disable room's emergency status on door
                 if (_inEmergency && !inEmergencyNow)
                 {
                     _program.Echo($"Emergency for {_roomName} is over");
@@ -177,7 +177,7 @@ namespace IngameScript
             }
 
             /// <summary>
-            /// Checks the status of doors in a pressurized room.
+            /// Checks the status of a pressurized room.
             /// </summary>
             /// <returns>true if the room is in an emergency, false otherwise.</returns>
             private bool CheckPressurizedRoom()
@@ -201,7 +201,7 @@ namespace IngameScript
             }
 
             /// <summary>
-            /// Checks the status of doors in a depressurized room.
+            /// Checks the status of a depressurized room.
             /// </summary>
             /// <returns>true if the room is not in an emergency, false otherwise.</returns>
             private bool CheckDepressurizedRoom()
@@ -238,7 +238,7 @@ namespace IngameScript
                 // Checks if both sets of doors are closed
                 if (!_innerDoorOpen && !_outerDoorOpen)
                 {
-                    // If both sets of doors are locked, re-enable them once room is depressurized as much as possible
+                    // If oxygen level needs to be checked, re-enable the doors once room is depressurized as much as possible
                     var oxygenLevelDiff = _prevOxygenLevel - _oxygenLevel;
                     if (_monitorOxygenLevel && (_oxygenLevel == 0 || Math.Abs(oxygenLevelDiff) < 0.0005))
                     {
@@ -272,10 +272,9 @@ namespace IngameScript
                 _innerDoors.ForEach(door => door.UpdateEmergencyState(_roomName, true));
                 _outerDoors.ForEach(door => door.UpdateEmergencyState(_roomName, true));
 
-                // If this is the very start of the emergency, close all doors
+                // If this is the very start of the emergency, mark the previous air vents' status
                 if (!_inEmergency)
                 {
-                    // Mark the previous air vents' status
                     _pressurizedBeforeEmergency = _pressurized;
                 }
 
