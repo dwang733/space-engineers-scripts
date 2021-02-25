@@ -22,11 +22,11 @@ namespace IngameScript
 {
     partial class Program
     {
-        public class GTSHelperTests
+        public class EnhancedGTSTests
         {
             public static void Test(Program program)
             {
-                var gtsHelper = new GTSHelper(program);
+                var gtsHelper = new EnhancedGTS(program);
 
                 program.Echo("Testing GTSHelper.GetBlocks()");
                 var allBlocks = new List<IMyTerminalBlock>();

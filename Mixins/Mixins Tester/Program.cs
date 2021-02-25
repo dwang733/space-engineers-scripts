@@ -24,7 +24,7 @@ namespace IngameScript
     {
         public Program()
         {
-            GTSHelperTests.Test(this);
+            EnhancedGTSTests.Test(this);
         }
 
         public void Main(string argument, UpdateType updateSource)
