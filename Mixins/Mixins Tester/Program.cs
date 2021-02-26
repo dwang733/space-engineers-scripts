@@ -24,11 +24,26 @@ namespace IngameScript
     {
         public Program()
         {
-            EnhancedGTSTests.Test(this);
+            //EnhancedGTSTests.Test(this);
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
+            try
+            {
+                var myIni = new MyIni();
+                myIni.TryParse(Me.CustomData);
+
+                var value = myIni.GetRequired<bool>("test", "test");
+                Echo($"Get value: {value}");
+            }
+            catch (Exception e)
+            {
+                Echo("An error occurred during script execution.");
+                Echo($"Exception: {e}\n---");
+
+                throw;
+            }
         }
     }
 }

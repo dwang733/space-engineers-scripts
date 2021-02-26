@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)EnhancedGTS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ItemTypeHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MyIniExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuotaAssembler.cs" />
   </ItemGroup>
 </Project>
