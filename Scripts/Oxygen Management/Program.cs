@@ -30,19 +30,19 @@ namespace IngameScript
         /// <summary>
         /// Matches inner door name with pattern "[Room 1]/[Room 2]".
         /// </summary>
-        private System.Text.RegularExpressions.Regex InnerDoorRegex = new System.Text.RegularExpressions.Regex(
+        private readonly System.Text.RegularExpressions.Regex InnerDoorRegex = new System.Text.RegularExpressions.Regex(
             @"(\w+)\/(\w+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Matches outer door name with pattern "[Room] Outer".
         /// </summary>
-        private System.Text.RegularExpressions.Regex OuterDoorRegex = new System.Text.RegularExpressions.Regex(
+        private readonly System.Text.RegularExpressions.Regex OuterDoorRegex = new System.Text.RegularExpressions.Regex(
             @"(\w+)\s+Outer", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Matches air vent name with pattern "[Room] Vent".
         /// </summary>
-        private System.Text.RegularExpressions.Regex VentRegex = new System.Text.RegularExpressions.Regex(
+        private readonly System.Text.RegularExpressions.Regex VentRegex = new System.Text.RegularExpressions.Regex(
             @"(\w+)\s+(?:Air\s*)?Vent", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
         /// <summary>
