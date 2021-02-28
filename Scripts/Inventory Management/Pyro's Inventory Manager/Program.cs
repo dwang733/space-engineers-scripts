@@ -25,7 +25,7 @@ namespace IngameScript
         /// <summary>
         /// The grid terminal system replacement.
         /// </summary>
-        private new readonly EnhancedGTS GridTerminalSystem;
+        private new readonly GridTerminalSystemV2 GridTerminalSystem;
 
         /// <summary>
         /// The user-customizable settings.
@@ -44,7 +44,7 @@ namespace IngameScript
 
         public Program()
         {
-            GridTerminalSystem = new EnhancedGTS(this);
+            GridTerminalSystem = new GridTerminalSystemV2(this);
             _settings = new Settings(Me.CustomData);
 
             GridTerminalSystem.SearchBlocksWithKeywords(_settings.IngotContainerKeywords, _ingotContainers);

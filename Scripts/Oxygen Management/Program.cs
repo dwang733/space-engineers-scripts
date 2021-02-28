@@ -25,7 +25,7 @@ namespace IngameScript
         /// <summary>
         /// The grid terminal system replacement
         /// </summary>
-        private new readonly EnhancedGTS GridTerminalSystem;
+        private new readonly GridTerminalSystemV2 GridTerminalSystem;
 
         /// <summary>
         /// Matches inner door name with pattern "[Room 1]/[Room 2]".
@@ -69,7 +69,7 @@ namespace IngameScript
         {
             Echo("Script started!");
 
-            GridTerminalSystem = new EnhancedGTS(this);
+            GridTerminalSystem = new GridTerminalSystemV2(this);
             InitializeRooms();
 
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
