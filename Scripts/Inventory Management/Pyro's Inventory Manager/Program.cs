@@ -67,19 +67,33 @@ namespace IngameScript
                 var refineryItems = new List<MyInventoryItem>();
                 foreach (var refinery in _refineries)
                 {
+                    //Echo($"Checking refinery {refinery.CustomName}");
                     var refineryInventory = refinery.OutputInventory;
                     // GetItems() does not clear the list, we need to do this manually.
                     refineryItems.Clear();
                     refineryInventory.GetItems(refineryItems);
 
                     // Try to transfer each item in refinery output to an ingot container.
+                    //Echo($"{refinery.CustomName} has {refineryItems.Count} items");
                     foreach (var item in refineryItems)
                     {
-                        var success = refineryInventory.TransferItemTo(ingotContainersEnumerator.Current.GetInventory(), item);
-                        while (!success)
+                        var currentItemAmount = item.Amount;
+                        //Echo($"Trying to transfer {item.Type.SubtypeId} from {refinery.CustomName} to {ingotContainersEnumerator.Current.CustomName}");
+                        foreach (var container in _ingotContainers)
                         {
-                            ingotContainersEnumerator.MoveNext();
-                            success = refineryInventory.TransferItemTo(ingotContainersEnumerator.Current.GetInventory(), item);
+                            // TransferItemTo() returning true does not mean that the item actually transferred.
+                            // So, we have to check the amounts manually.
+                            var containerInventory = container.GetInventory();
+                            var prevItemAmount = containerInventory.GetItemAmount(item.Type);
+                            refineryInventory.TransferItemTo(container.GetInventory(), item);
+                            var newItemAmount = containerInventory.GetItemAmount(item.Type);
+
+                            if (newItemAmount - prevItemAmount >= currentItemAmount)
+                            {
+                                break;
+                            }
+                            
+                            currentItemAmount -= newItemAmount - prevItemAmount;
                         }
                     }
                 }
