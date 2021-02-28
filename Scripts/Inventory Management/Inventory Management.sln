@@ -5,7 +5,13 @@ VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pyro's Inventory Manager", "Pyro's Inventory Manager\Pyro's Inventory Manager.csproj", "{9B53FEBE-8B6D-41F4-8B24-8C300E5621F7}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared Library", "..\..\Mixins\Shared Library\Shared Library.shproj", "{61EBA249-19F3-48B6-A25B-A4CEE90168BA}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Mixins\Shared Library\Shared_Library.projitems*{61eba249-19f3-48b6-a25b-a4cee90168ba}*SharedItemsImports = 13
+		..\..\Mixins\Shared Library\Shared_Library.projitems*{9b53febe-8b6d-41f4-8b24-8c300e5621f7}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 	EndGlobalSection
