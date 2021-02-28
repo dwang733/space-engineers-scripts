@@ -23,22 +23,22 @@ namespace IngameScript
     partial class Program
     {
         /// <summary>
-        /// <para>A replacement for the base Grid Terminal System.</para>
+        /// <para>
+        /// A replacement for the base Grid Terminal System.
+        /// Note that this is NOT backwards-compatible with <see cref="IMyGridTerminalSystem"/>, and it is not recommended to replace in existing code.
+        /// </para>
         /// <example>
         /// You can hide the base implementation with the following code in Program.cs:
         /// <code>
-        /// new EnhancedGTS GridTerminalSystem;
+        /// new GridTerminalSystemV2 GridTerminalSystem;
         /// </code>
         /// </example>
         /// </summary>
-        /// <remarks>
-        /// This class avoids nesting any collect predicates within additional lambdas, or Space Engineers will complain about script complexity.
-        /// </remarks>
-        public class EnhancedGTS
+        public class GridTerminalSystemV2
         {
             private readonly MyGridProgram _program;
 
-            public EnhancedGTS(MyGridProgram program)
+            public GridTerminalSystemV2(MyGridProgram program)
             {
                 _program = program;
             }

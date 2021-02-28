@@ -31,7 +31,7 @@ namespace IngameScript
         {
             try
             {
-                EnhancedGTSTests.Test(this);
+                GridTerminalSystemV2Tests.Test(this);
                 //var myIni = new MyIni();
                 //myIni.TryParse(Me.CustomData);
 

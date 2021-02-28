@@ -22,27 +22,28 @@ namespace IngameScript
 {
     partial class Program
     {
-        public class EnhancedGTSTests
+        public class GridTerminalSystemV2Tests
         {
             public static void Test(Program program)
             {
-                var gtsHelper = new EnhancedGTS(program);
+                var GridTerminalSystem = new GridTerminalSystemV2(program);
+                GridTerminalSystem.GetBlocks(new List<IMyTerminalBlock>());
 
-                program.Echo("Testing GTSHelper.GetBlocks()");
+                program.Echo("Testing GridTerminalSystemV2.GetBlocks()");
                 var allBlocks = new List<IMyTerminalBlock>();
-                gtsHelper.GetBlocks(allBlocks);
+                GridTerminalSystem.GetBlocks(allBlocks);
                 program.Echo($"Is the result null? - {allBlocks == null}");
                 program.Echo($"Num of blocks returned - {allBlocks.Count}");
 
-                program.Echo("Testing GTSHelper.GetBlockGroups()");
+                program.Echo("Testing GridTerminalSystemV2.GetBlockGroups()");
                 var allBlockGroups = new List<IMyBlockGroup>();
-                gtsHelper.GetBlockGroups(allBlockGroups);
+                GridTerminalSystem.GetBlockGroups(allBlockGroups);
                 program.Echo($"Is the result null? - {allBlockGroups == null}");
                 program.Echo($"Num of block groups returned - {allBlockGroups.Count}");
 
-                program.Echo("Testing GTSHelper.GetBlocksOfType()");
+                program.Echo("Testing GridTerminalSystemV2.GetBlocksOfType()");
                 var blocksOfType = new List<IMyProgrammableBlock>();
-                gtsHelper.GetBlocksOfType(blocksOfType, mustBeSameConstruct: true);
+                GridTerminalSystem.GetBlocksOfType(blocksOfType, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blocksOfType == null}");
                 program.Echo($"Num of blocks returned - {blocksOfType.Count}");
                 foreach (var block in blocksOfType)
@@ -50,9 +51,9 @@ namespace IngameScript
                     program.Echo(block.CustomName);
                 }
 
-                program.Echo("Testing GTSHelper.SearchBlocksOfName()");
+                program.Echo("Testing GridTerminalSystemV2.SearchBlocksOfName()");
                 var blocksOfName = new List<IMyProgrammableBlock>();
-                gtsHelper.SearchBlocksOfName("Programmable block", blocksOfName, mustBeSameConstruct: true);
+                GridTerminalSystem.SearchBlocksOfName("Programmable block", blocksOfName, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blocksOfName == null}");
                 program.Echo($"Num of blocks returned - {blocksOfName.Count}");
                 foreach (var block in blocksOfName)
@@ -60,9 +61,9 @@ namespace IngameScript
                     program.Echo(block.CustomName);
                 }
 
-                program.Echo("Testing GTSHelper.SearchBlocksWithKeywords()");
+                program.Echo("Testing GridTerminalSystemV2.SearchBlocksWithKeywords()");
                 var blocksByKeywords = new List<IMyProgrammableBlock>();
-                gtsHelper.SearchBlocksWithKeywords(new[] { "Programmable block" }, blocksByKeywords, mustBeSameConstruct: true);
+                GridTerminalSystem.SearchBlocksWithKeywords(new[] { "Programmable block" }, blocksByKeywords, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blocksOfName == null}");
                 program.Echo($"Num of blocks returned - {blocksOfName.Count}");
                 foreach (var block in blocksOfName)
@@ -70,14 +71,14 @@ namespace IngameScript
                     program.Echo(block.CustomName);
                 }
 
-                program.Echo("Testing GTSHelper.GetBlockWithName()");
-                var blockByName = gtsHelper.GetBlockWithName<IMyProgrammableBlock>("Programmable block", mustBeSameConstruct: true);
+                program.Echo("Testing GridTerminalSystemV2.GetBlockWithName()");
+                var blockByName = GridTerminalSystem.GetBlockWithName<IMyProgrammableBlock>("Programmable block", mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blockByName == null}");
                 program.Echo($"Block name: {blockByName?.CustomName}");
 
-                program.Echo("Testing GTSHelper.GetBlockGroupWithName()");
+                program.Echo("Testing GridTerminalSystemV2.GetBlockGroupWithName()");
                 var blocksOfGroup = new List<IMyProgrammableBlock>();
-                gtsHelper.GetBlockGroupWithName("Programmable block", blocksOfGroup, mustBeSameConstruct: true);
+                GridTerminalSystem.GetBlockGroupWithName("Programmable block", blocksOfGroup, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blocksOfGroup == null}");
                 program.Echo($"Num of blocks returned - {blocksOfGroup.Count}");
                 foreach (var block in blocksOfGroup)
@@ -85,10 +86,10 @@ namespace IngameScript
                     program.Echo(block.CustomName);
                 }
 
-                program.Echo("Testing GTSHelper.GetBlockWithId()");
-                var blockId = gtsHelper.GetBlockWithName<IMyProgrammableBlock>("Programmable block", mustBeSameConstruct: true).EntityId;
+                program.Echo("Testing GridTerminalSystemV2.GetBlockWithId()");
+                var blockId = GridTerminalSystem.GetBlockWithName<IMyProgrammableBlock>("Programmable block", mustBeSameConstruct: true).EntityId;
                 program.Echo($"EntityId: {blockId}");
-                var blockById = gtsHelper.GetBlockWithId<IMyProgrammableBlock>(blockId, mustBeSameConstruct: true);
+                var blockById = GridTerminalSystem.GetBlockWithId<IMyProgrammableBlock>(blockId, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blockById == null}");
                 program.Echo($"Block name: {blockById?.CustomName}");
             }
