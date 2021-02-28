@@ -126,6 +126,32 @@ namespace IngameScript
             }
 
             /// <summary>
+            /// Searches all blocks of the specified type and returns those whose name contains any of the specified keywords
+            /// (just like searching grid blocks via control panel).
+            /// E.g. a block named "Mynoch" would be returned if you search for "no".
+            /// </summary>
+            /// <typeparam name="T">The type of block to search.</typeparam>
+            /// <param name="keywords">The keywords to use in the search.</param>
+            /// <param name="blocks">The list of blocks that will be populated.</param>
+            /// <param name="collect">An optional function to filter blocks of the specified type.</param>
+            /// <param name="mustBeSameConstruct">True if blocks must be on the same construct as the programmable block, false otherwise.</param>
+            public void SearchBlocksWithKeywords<T>(
+                IEnumerable<string> keywords,
+                List<T> blocks,
+                Func<T, bool> collect = null,
+                bool mustBeSameConstruct = true)
+                where T : class, IMyTerminalBlock
+            {
+                _program.GridTerminalSystem.GetBlocksOfType(blocks, collect);
+                if (mustBeSameConstruct)
+                {
+                    blocks.RemoveAll(block => !SameConstructPredicate(block));
+                }
+
+                blocks.RemoveAll(block => keywords.All(keyword => !block.CustomName.Contains(keyword)));
+            }
+
+            /// <summary>
             /// Gets a single block of the specified type by its exact name.
             /// </summary>
             /// <typeparam name="T">The type of the block.</typeparam>

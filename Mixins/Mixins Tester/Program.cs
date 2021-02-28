@@ -24,18 +24,19 @@ namespace IngameScript
     {
         public Program()
         {
-            //EnhancedGTSTests.Test(this);
+            Runtime.UpdateFrequency = UpdateFrequency.Update100;
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
             try
             {
-                var myIni = new MyIni();
-                myIni.TryParse(Me.CustomData);
+                EnhancedGTSTests.Test(this);
+                //var myIni = new MyIni();
+                //myIni.TryParse(Me.CustomData);
 
-                var value = myIni.GetRequired<bool>("test", "test");
-                Echo($"Get value: {value}");
+                //var value = myIni.GetRequired<bool>("test", "test");
+                //Echo($"Get value: {value}");
             }
             catch (Exception e)
             {

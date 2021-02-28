@@ -51,8 +51,18 @@ namespace IngameScript
                 }
 
                 program.Echo("Testing GTSHelper.SearchBlocksOfName()");
-                var blocksOfName = new List<IMyAirtightSlideDoor>();
-                gtsHelper.SearchBlocksOfName("asdfasfd", blocksOfName, mustBeSameConstruct: true);
+                var blocksOfName = new List<IMyProgrammableBlock>();
+                gtsHelper.SearchBlocksOfName("Programmable block", blocksOfName, mustBeSameConstruct: true);
+                program.Echo($"Is the result null? - {blocksOfName == null}");
+                program.Echo($"Num of blocks returned - {blocksOfName.Count}");
+                foreach (var block in blocksOfName)
+                {
+                    program.Echo(block.CustomName);
+                }
+
+                program.Echo("Testing GTSHelper.SearchBlocksWithKeywords()");
+                var blocksByKeywords = new List<IMyProgrammableBlock>();
+                gtsHelper.SearchBlocksWithKeywords(new[] { "Programmable block" }, blocksByKeywords, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blocksOfName == null}");
                 program.Echo($"Num of blocks returned - {blocksOfName.Count}");
                 foreach (var block in blocksOfName)
@@ -61,13 +71,13 @@ namespace IngameScript
                 }
 
                 program.Echo("Testing GTSHelper.GetBlockWithName()");
-                var blockByName = gtsHelper.GetBlockWithName<IMyProgrammableBlock>("CF2 Status Report Program", mustBeSameConstruct: false);
+                var blockByName = gtsHelper.GetBlockWithName<IMyProgrammableBlock>("Programmable block", mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blockByName == null}");
                 program.Echo($"Block name: {blockByName?.CustomName}");
 
                 program.Echo("Testing GTSHelper.GetBlockGroupWithName()");
-                var blocksOfGroup = new List<IMyGravityGenerator>();
-                gtsHelper.GetBlockGroupWithName("Player-activated internals", blocksOfGroup, mustBeSameConstruct: true);
+                var blocksOfGroup = new List<IMyProgrammableBlock>();
+                gtsHelper.GetBlockGroupWithName("Programmable block", blocksOfGroup, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blocksOfGroup == null}");
                 program.Echo($"Num of blocks returned - {blocksOfGroup.Count}");
                 foreach (var block in blocksOfGroup)
@@ -76,9 +86,9 @@ namespace IngameScript
                 }
 
                 program.Echo("Testing GTSHelper.GetBlockWithId()");
-                var blockId = gtsHelper.GetBlockWithName<IMyProgrammableBlock>("MSG Oxygen Management Program", mustBeSameConstruct: false).EntityId;
+                var blockId = gtsHelper.GetBlockWithName<IMyProgrammableBlock>("Programmable block", mustBeSameConstruct: true).EntityId;
                 program.Echo($"EntityId: {blockId}");
-                var blockById = gtsHelper.GetBlockWithId<IMyProgrammableBlock>(blockId, mustBeSameConstruct: false);
+                var blockById = gtsHelper.GetBlockWithId<IMyProgrammableBlock>(blockId, mustBeSameConstruct: true);
                 program.Echo($"Is the result null? - {blockById == null}");
                 program.Echo($"Block name: {blockById?.CustomName}");
             }
