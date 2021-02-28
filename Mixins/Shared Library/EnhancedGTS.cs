@@ -45,10 +45,9 @@ namespace IngameScript
 
             /// <summary>
             /// Gets all the available blocks the Grid Terminal System has access to.
-            /// This may include blocks that are not be on the same construct as the programmable block.
             /// </summary>
             /// <param name="blocks">The list of blocks that will be populated.</param>
-            /// <param name="mustBeSameConstruct">Set to true if blocks must be on the same construct as the programmable block. True by default.</param>
+            /// <param name="mustBeSameConstruct">True if blocks must be on the same construct as the programmable block, false otherwise.</param>
             public void GetBlocks(
                 List<IMyTerminalBlock> blocks,
                 bool mustBeSameConstruct = true)
@@ -80,7 +79,7 @@ namespace IngameScript
             /// <typeparam name="T">The type of block to retrieve.</typeparam>
             /// <param name="blocks">The list of blocks that will be populated.</param>
             /// <param name="collect">An optional function to filter blocks of the specified type.</param>
-            /// <param name="mustBeSameConstruct">Set to true if blocks must be on the same construct as the programmable block. True by default.</param>
+            /// <param name="mustBeSameConstruct">True if blocks must be on the same construct as the programmable block, false otherwise.</param>
             public void GetBlocksOfType<T>(
                 List<T> blocks,
                 Func<T, bool> collect = null,
@@ -103,7 +102,7 @@ namespace IngameScript
             /// <param name="name">The name to use in the search.</param>
             /// <param name="blocks">The list of blocks that will be populated.</param>
             /// <param name="collect">An optional function to filter blocks of the specified type.</param>
-            /// <param name="mustBeSameConstruct">Set to true if blocks must be on the same construct as the programmable block. True by default.</param>
+            /// <param name="mustBeSameConstruct">True if blocks must be on the same construct as the programmable block, false otherwise.</param>
             public void SearchBlocksOfName<T>(
                 string name,
                 List<T> blocks,
@@ -131,7 +130,7 @@ namespace IngameScript
             /// </summary>
             /// <typeparam name="T">The type of the block.</typeparam>
             /// <param name="name">The name of the block, which must be exact, case sensitive, and include any spacing.</param>
-            /// <param name="mustBeSameConstruct">Set to true if blocks must be on the same construct as the programmable block. True by default.</param>
+            /// <param name="mustBeSameConstruct">True if block must be on the same construct as the programmable block, false otherwise.</param>
             /// <returns>
             /// The single block, or null if the block doesn't exist, or is not on the same construct as the programmable block if the check is enabled.
             /// </returns>
@@ -156,7 +155,7 @@ namespace IngameScript
             /// <param name="name">The name of the block group, which must be exact, case sensitive, and include any spacing.</param>
             /// <param name="blocks">The list of blocks that will be populated. List will be empty if block group name cannot be found.</param>
             /// <param name="collect">An optional function to filter blocks of the specified type in the block group.</param>
-            /// <param name="mustBeSameConstruct">Set to true if blocks must be on the same construct as the programmable block. True by default.</param>
+            /// <param name="mustBeSameConstruct">True if blocks must be on the same construct as the programmable block, false otherwise.</param>
             public void GetBlockGroupWithName<T>(
                 string name,
                 List<T> blocks,
@@ -183,7 +182,7 @@ namespace IngameScript
             /// Gets a single block of the specified type by its EntityId.
             /// </summary>
             /// <typeparam name="T">The type of the block.</typeparam>
-            /// <param name="mustBeSameConstruct">Set to true if blocks must be on the same construct as the programmable block. True by default.</param>
+            /// <param name="mustBeSameConstruct">True if block must be on the same construct as the programmable block, false otherwise.</param>
             /// <returns>
             /// The single block, or null if the block doesn't exist, or is not on the same construct as the programmable block if the check is enabled.
             /// </returns>
