@@ -48,10 +48,16 @@ namespace IngameScript
             /// This may include blocks that are not be on the same construct as the programmable block.
             /// </summary>
             /// <param name="blocks">The list of blocks that will be populated.</param>
-            public void GetBlocks(List<IMyTerminalBlock> blocks)
+            /// <param name="mustBeSameConstruct">Set to true if blocks must be on the same construct as the programmable block. True by default.</param>
+            public void GetBlocks(
+                List<IMyTerminalBlock> blocks,
+                bool mustBeSameConstruct = true)
             {
-                // TODO: Filter by same construct.
                 _program.GridTerminalSystem.GetBlocks(blocks);
+                if (mustBeSameConstruct)
+                {
+                    blocks.RemoveAll(block => !SameConstructPredicate(block));
+                }
             }
 
             /// <summary>
@@ -84,7 +90,7 @@ namespace IngameScript
                 _program.GridTerminalSystem.GetBlocksOfType(blocks, collect);
                 if (mustBeSameConstruct)
                 {
-                    blocks.RemoveAll(SameConstructPredicate);
+                    blocks.RemoveAll(block => !SameConstructPredicate(block));
                 }
             }
 
@@ -169,7 +175,7 @@ namespace IngameScript
                 group.GetBlocksOfType(blocks, collect);
                 if (mustBeSameConstruct)
                 {
-                    blocks.RemoveAll(SameConstructPredicate);
+                    blocks.RemoveAll(block => !SameConstructPredicate(block));
                 }
             }
 
