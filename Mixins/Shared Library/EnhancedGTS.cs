@@ -63,7 +63,7 @@ namespace IngameScript
             /// Gets a list of block groups the Grid Terminal System has access to.
             /// This may include blocks that are not on the same construct as the programmable block.
             /// </summary>
-            /// <param name="blocks">The list of block groups that will be populated.</param>
+            /// <param name="blockGroups">The list of block groups that will be populated.</param>
             /// <param name="collect">An optional function to filter the block groups.</param>
             public void GetBlockGroups(
                 List<IMyBlockGroup> blockGroups,
@@ -182,6 +182,7 @@ namespace IngameScript
             /// Gets a single block of the specified type by its EntityId.
             /// </summary>
             /// <typeparam name="T">The type of the block.</typeparam>
+            /// <param name="id">The entity id of the block.</param>
             /// <param name="mustBeSameConstruct">True if block must be on the same construct as the programmable block, false otherwise.</param>
             /// <returns>
             /// The single block, or null if the block doesn't exist, or is not on the same construct as the programmable block if the check is enabled.
