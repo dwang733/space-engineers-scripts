@@ -65,12 +65,26 @@ namespace IngameScript
             /// </summary>
             /// <param name="blockGroups">The list of block groups that will be populated.</param>
             /// <param name="collect">An optional function to filter the block groups.</param>
+            /// <param name="mustBeSameConstruct">True if at least one of the blocks in the group must be on the same construct as the programmable block, false otherwise.</param>
             public void GetBlockGroups(
                 List<IMyBlockGroup> blockGroups,
-                Func<IMyBlockGroup, bool> collect = null)
+                Func<IMyBlockGroup, bool> collect = null,
+                bool mustBeSameConstruct = true)
             {
-                // TODO: Filter by same construct.
                 _program.GridTerminalSystem.GetBlockGroups(blockGroups, collect);
+                if (mustBeSameConstruct)
+                {
+                    var blocks = new List<IMyTerminalBlock>();
+                    for (int i = blockGroups.Count - 1; i >= 0; i--)
+                    {
+                        var blockGroup = blockGroups[i];
+                        blockGroup.GetBlocks(blocks);
+                        if (!blocks.Any(SameConstructPredicate))
+                        {
+                            blockGroups.RemoveAt(i);
+                        }
+                    }
+                }
             }
 
             /// <summary>
