@@ -37,6 +37,9 @@ namespace IngameScript
         /// </summary>
         private readonly List<IMyCargoContainer> _ingotContainers = new List<IMyCargoContainer>();
 
+        /// <summary>
+        /// The list of refineries.
+        /// </summary>
         private readonly List<IMyRefinery> _refineries = new List<IMyRefinery>();
 
         public Program()
@@ -44,10 +47,10 @@ namespace IngameScript
             GridTerminalSystem = new EnhancedGTS(this);
             _settings = new Settings(Me.CustomData);
 
-            //GridTerminalSystem.GetBlocksOfType(_ingotContainers, container => _settings.IngotContainerKeywords.Any(keyword => container.CustomName.Contains(keyword)));
-            //GridTerminalSystem.GetBlocksOfType(_refineries, refinery => _settings.RefineryKeywords.Contains(refinery.CustomName));
+            GridTerminalSystem.SearchBlocksWithKeywords(_settings.IngotContainerKeywords, _ingotContainers);
+            GridTerminalSystem.SearchBlocksWithKeywords(_settings.RefineryKeywords, _refineries);
 
-            //Echo($"{_ingotContainers.Count()} | {_refineries.Count()}");
+            Echo($"{_ingotContainers.Count()} | {_refineries.Count()}");
 
             Runtime.UpdateFrequency = UpdateFrequency.Update100;
         }
@@ -56,38 +59,30 @@ namespace IngameScript
         {
             try
             {
-                //var ingotContainersEnumerator = _ingotContainers.GetEnumerator();
-                //var refineryOutput = new List<MyInventoryItem>();
-                //// Transfer output inventory of each refinery to ingot containers.
-                //// We assume that if an ingot container cannot be transferred to, it will remain so for the rest of this loop.
-                //foreach (var refinery in _refineries)
-                //{
-                //    var refineryInventory = refinery.OutputInventory;
-                //    refineryInventory.GetItems(refineryOutput);
+                var ingotContainersEnumerator = _ingotContainers.GetEnumerator();
+                ingotContainersEnumerator.MoveNext();
 
-                //    // Try to transfer each item in refinery output to an ingot container.
-                //    foreach (var item in refineryOutput)
-                //    {
-                //        var success = refineryInventory.TransferItemTo(ingotContainersEnumerator.Current.GetInventory(), item);
-                //        while (!success)
-                //        {
-                //            ingotContainersEnumerator.MoveNext();
-                //            success = refineryInventory.TransferItemTo(ingotContainersEnumerator.Current.GetInventory(), item);
-                //        }
-                //    }
-                //}
+                // Transfer output inventory of each refinery to ingot containers.
+                // We assume that if an ingot container cannot be transferred to, it will remain so for the rest of this loop.
+                var refineryItems = new List<MyInventoryItem>();
+                foreach (var refinery in _refineries)
+                {
+                    var refineryInventory = refinery.OutputInventory;
+                    // GetItems() does not clear the list, we need to do this manually.
+                    refineryItems.Clear();
+                    refineryInventory.GetItems(refineryItems);
 
-                Echo($"{Runtime.LastRunTimeMs}");
-                //GridTerminalSystem.GetBlocksOfType(_refineries, refinery => _settings.RefineryKeywords.Any(keyword => refinery.CustomName.Contains(keyword)));
-                GridTerminalSystem.GetBlocksOfType(_refineries);
-                _refineries.Select(refinery => _settings.RefineryKeywords.Any(keyword => refinery.CustomName.Contains(keyword)));
-                //foreach (var refinery in _refineries)
-                //{
-                //    if (_settings.RefineryKeywords.Any(keyword => refinery.CustomName.Contains(keyword)))
-                //    {
-                //        Echo("Refinery matches keywords");
-                //    }
-                //}
+                    // Try to transfer each item in refinery output to an ingot container.
+                    foreach (var item in refineryItems)
+                    {
+                        var success = refineryInventory.TransferItemTo(ingotContainersEnumerator.Current.GetInventory(), item);
+                        while (!success)
+                        {
+                            ingotContainersEnumerator.MoveNext();
+                            success = refineryInventory.TransferItemTo(ingotContainersEnumerator.Current.GetInventory(), item);
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
