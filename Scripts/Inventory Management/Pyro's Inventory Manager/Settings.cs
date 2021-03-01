@@ -31,7 +31,11 @@ namespace IngameScript
 
             public List<string> IngotContainerKeywords => _myIni.GetRequiredAsList<string>("Settings", nameof(IngotContainerKeywords));
 
+            public List<string> ComponentContainerKeywords => _myIni.GetRequiredAsList<string>("Settings", nameof(ComponentContainerKeywords));
+
             public List<string> RefineryKeywords => _myIni.GetRequiredAsList<string>("Settings", nameof(RefineryKeywords));
+
+            public List<string> AssemblerKeywords => _myIni.GetRequiredAsList<string>("Settings", nameof(AssemblerKeywords));
 
             public Settings(string configuration)
             {
