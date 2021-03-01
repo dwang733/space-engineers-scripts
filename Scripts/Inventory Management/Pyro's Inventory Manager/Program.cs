@@ -59,11 +59,12 @@ namespace IngameScript
         {
             try
             {
+                // We assume that if an ingot container cannot be transferred to, it will remain so for the rest of the loop.
                 var ingotContainersEnumerator = _ingotContainers.GetEnumerator();
                 ingotContainersEnumerator.MoveNext();
+                var containerInventory = ingotContainersEnumerator.Current.GetInventory();
 
                 // Transfer output inventory of each refinery to ingot containers.
-                // We assume that if an ingot container cannot be transferred to, it will remain so for the rest of this loop.
                 var refineryItems = new List<MyInventoryItem>();
                 foreach (var refinery in _refineries)
                 {
@@ -79,21 +80,27 @@ namespace IngameScript
                     {
                         var currentItemAmount = item.Amount;
                         //Echo($"Trying to transfer {item.Type.SubtypeId} from {refinery.CustomName} to {ingotContainersEnumerator.Current.CustomName}");
-                        foreach (var container in _ingotContainers)
+                        while (true)
                         {
                             // TransferItemTo() returning true does not mean that the item actually transferred.
                             // So, we have to check the amounts manually.
-                            var containerInventory = container.GetInventory();
                             var prevItemAmount = containerInventory.GetItemAmount(item.Type);
-                            refineryInventory.TransferItemTo(container.GetInventory(), item);
+                            refineryInventory.TransferItemTo(containerInventory, item);
                             var newItemAmount = containerInventory.GetItemAmount(item.Type);
 
                             if (newItemAmount - prevItemAmount >= currentItemAmount)
                             {
                                 break;
                             }
-                            
+
+                            var moved = ingotContainersEnumerator.MoveNext();
+                            if (!moved)
+                            {
+                                break;
+                            }
+
                             currentItemAmount -= newItemAmount - prevItemAmount;
+                            containerInventory = ingotContainersEnumerator.Current.GetInventory();
                         }
                     }
                 }
