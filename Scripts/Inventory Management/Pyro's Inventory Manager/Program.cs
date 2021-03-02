@@ -83,7 +83,12 @@ namespace IngameScript
                 throw;
             }
         }
-
+        
+        /// <summary>
+        /// Transfer output of the specified production blocks into the specified containers.
+        /// </summary>
+        /// <param name="prodBlocks">The production blocks to transfer out of.</param>
+        /// <param name="containers">The containers to transfer into.</param>
         private void TransferOutOfProductionBlocks(IEnumerable<IMyProductionBlock> prodBlocks, List<IMyCargoContainer> containers)
         {
             // We assume that if a container cannot be transferred to, it will remain so for the rest of the loop.
@@ -97,7 +102,7 @@ namespace IngameScript
             {
                 //Echo($"Checking {prodBlock.CustomName}");
                 var prodInventory = prodBlock.OutputInventory;
-                // GetItems() does not clear the list, we need to do this manually.
+                // GetItems() does not clear the list, we need to do this manually. 
                 prodItems.Clear();
                 prodInventory.GetItems(prodItems);
 
